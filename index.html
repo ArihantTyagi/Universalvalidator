@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Validator OS | Neural Scan</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body class="dark-theme">
     <div class="app-container">
@@ -43,18 +44,22 @@
     </div>
 
     <script>
+        // CHANGE THIS TO YOUR RENDER URL
+        const API_URL = "https://YOUR_RENDER_URL_HERE.onrender.com";
+
         async function checkConn() {
             try {
-                const r = await fetch('http://localhost:3000/');
+                const r = await fetch(API_URL + '/');
                 if(r.ok) {
                     const tag = document.getElementById('connectionStatus');
                     tag.innerText = "SECURE NEURAL LINK ACTIVE";
-                    tag.style.background = "rgba(0, 242, 255, 0.1)";
                     tag.style.color = "#00f2ff";
+                    tag.style.borderColor = "#00f2ff";
                 }
             } catch(e) {}
         }
-        setInterval(checkConn, 3000);
+        setInterval(checkConn, 5000);
+        checkConn();
 
         async function runUniversalScan() {
             const input = document.getElementById('userInput').value;
@@ -64,7 +69,7 @@
             document.getElementById('dataDisplay').classList.add('hidden');
 
             try {
-                const response = await fetch('http://localhost:3000/api/analyze', {
+                const response = await fetch(`${API_URL}/api/analyze`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ input })
