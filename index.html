@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Validator OS | Neural Scan</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Scan History</h2>
+                <button onclick="localStorage.clear(); location.reload();" class="btn-clear">Clear</button>
+            </div>
+            <div id="historyList" class="history-list"></div>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div id="connectionStatus" class="status-tag pulse-red">OFFLINE</div>
+                <h1>Universal Validator</h1>
+                <p>Paste a link or raw text to verify intelligence accuracy.</p>
+            </header>
+
+            <div class="glass-input-box">
+                <textarea id="userInput" placeholder="Paste link or text here..." rows="5"></textarea>
+                <button class="btn-glow" onclick="runUniversalScan()">Initialize Neural Scan</button>
+            </div>
+
+            <div id="resultsSection" class="hidden">
+                <div class="result-glass">
+                    <div id="loader">Processing Truth Vectors...</div>
+                    <div id="dataDisplay" class="hidden">
+                        <h2 id="accuracyVal" style="font-size: 4rem; color: #00f2ff; text-align: center;">0%</h2>
+                        <p style="text-align: center; color: #94a3b8; margin-bottom: 20px;">ACCURACY</p>
+                        <p><strong>[VERDICT]:</strong> <span id="verdictText" style="color:#00f2ff"></span></p>
+                        <p id="summaryText" style="line-height:1.6; color:#94a3b8; margin:15px 0;"></p>
+                        <ul id="citationsList" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; font-size:0.8rem;"></ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function checkConn() {
+            try {
+                const r = await fetch('http://localhost:3000/');
+                if(r.ok) {
+                    const tag = document.getElementById('connectionStatus');
+                    tag.innerText = "SECURE NEURAL LINK ACTIVE";
+                    tag.style.background = "rgba(0, 242, 255, 0.1)";
+                    tag.style.color = "#00f2ff";
+                }
+            } catch(e) {}
+        }
+        setInterval(checkConn, 3000);
+
+        async function runUniversalScan() {
+            const input = document.getElementById('userInput').value;
+            if(!input) return;
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('dataDisplay').classList.add('hidden');
+
+            try {
+                const response = await fetch('http://localhost:3000/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input })
+                });
+                const data = await response.json();
+                renderResult(data);
+                saveScan(input, data);
+            } catch (err) {
+                document.getElementById('loader').innerHTML = "<span style='color:#ff4444'>CRITICAL ERROR: Connection Refused.</span>";
+            }
+        }
+
+        function renderResult(data) {
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('dataDisplay').classList.remove('hidden');
+            document.getElementById('accuracyVal').innerText = data.score + "%";
+            document.getElementById('verdictText').innerText = data.verdict;
+            document.getElementById('summaryText').innerText = data.summary;
+            document.getElementById('citationsList').innerHTML = data.citations.map(c => `<li>${c}</li>`).join('');
+        }
+
+        function saveScan(input, data) {
+            let history = JSON.parse(localStorage.getItem('val_h') || '[]');
+            history.unshift({ title: input.substring(0,20)+'...', data, time: new Date().toLocaleTimeString() });
+            localStorage.setItem('val_h', JSON.stringify(history.slice(0, 10)));
+            displayHistory();
+        }
+
+        function displayHistory() {
+            const history = JSON.parse(localStorage.getItem('val_h') || '[]');
+            document.getElementById('historyList').innerHTML = history.map(item => `
+                <div class="history-item" onclick='renderResult(${JSON.stringify(item.data)})' style="padding:15px; background:rgba(255,255,255,0.05); margin-bottom:10px; border-radius:8px; cursor:pointer;">
+                    <strong>${item.title}</strong><br><small>${item.time} - ${item.data.verdict}</small>
+                </div>`).join('');
+        }
+        window.onload = displayHistory;
+    </script>
+</body>
+</html>
