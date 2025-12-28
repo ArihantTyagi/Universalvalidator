@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validator OS | Neural Scan</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
@@ -18,13 +19,13 @@
 
         <main class="main-content">
             <header class="header">
-                <div id="connectionStatus" class="status-tag pulse-red">OFFLINE</div>
+                <div id="connectionStatus" class="status-tag pulse-red">CONNECTING TO RENDER...</div>
                 <h1>Universal Validator</h1>
                 <p>Paste a link or raw text to verify intelligence accuracy.</p>
             </header>
 
             <div class="glass-input-box">
-                <textarea id="userInput" placeholder="Paste link or text here..." rows="5"></textarea>
+                <textarea id="userInput" placeholder="Paste link (https://...) or text here..." rows="5"></textarea>
                 <button class="btn-glow" onclick="runUniversalScan()">Initialize Neural Scan</button>
             </div>
 
@@ -44,8 +45,8 @@
     </div>
 
     <script>
-        // CHANGE THIS TO YOUR RENDER URL
-        const API_URL = "https://YOUR_RENDER_URL_HERE.onrender.com";
+        // Your specific Render Live Link
+        const API_URL = "https://validator-api-wiwi.onrender.com";
 
         async function checkConn() {
             try {
@@ -53,10 +54,13 @@
                 if(r.ok) {
                     const tag = document.getElementById('connectionStatus');
                     tag.innerText = "SECURE NEURAL LINK ACTIVE";
+                    tag.className = "status-tag pulse-green";
                     tag.style.color = "#00f2ff";
                     tag.style.borderColor = "#00f2ff";
                 }
-            } catch(e) {}
+            } catch(e) {
+                console.log("Server is waking up...");
+            }
         }
         setInterval(checkConn, 5000);
         checkConn();
@@ -78,7 +82,7 @@
                 renderResult(data);
                 saveScan(input, data);
             } catch (err) {
-                document.getElementById('loader').innerHTML = "<span style='color:#ff4444'>CRITICAL ERROR: Connection Refused.</span>";
+                document.getElementById('loader').innerHTML = "<span style='color:#ff4444'>ERROR: Server is still waking up. Please wait 30s and try again.</span>";
             }
         }
 
