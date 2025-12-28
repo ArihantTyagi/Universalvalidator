@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validator OS | Neural Scan</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
 </head>
 <body class="dark-theme">
     <div class="app-container">
@@ -19,13 +18,13 @@
 
         <main class="main-content">
             <header class="header">
-                <div id="connectionStatus" class="status-tag pulse-red">CONNECTING TO RENDER...</div>
+                <div id="connectionStatus" class="status-tag pulse-red">WAKING UP SERVER...</div>
                 <h1>Universal Validator</h1>
                 <p>Paste a link or raw text to verify intelligence accuracy.</p>
             </header>
 
             <div class="glass-input-box">
-                <textarea id="userInput" placeholder="Paste link (https://...) or text here..." rows="5"></textarea>
+                <textarea id="userInput" placeholder="Paste link or text here..." rows="5"></textarea>
                 <button class="btn-glow" onclick="runUniversalScan()">Initialize Neural Scan</button>
             </div>
 
@@ -45,7 +44,7 @@
     </div>
 
     <script>
-        // Your specific Render Live Link
+        // THIS IS YOUR LIVE LINK FROM RENDER
         const API_URL = "https://validator-api-wiwi.onrender.com";
 
         async function checkConn() {
@@ -54,13 +53,11 @@
                 if(r.ok) {
                     const tag = document.getElementById('connectionStatus');
                     tag.innerText = "SECURE NEURAL LINK ACTIVE";
-                    tag.className = "status-tag pulse-green";
                     tag.style.color = "#00f2ff";
                     tag.style.borderColor = "#00f2ff";
+                    tag.className = "status-tag pulse-green";
                 }
-            } catch(e) {
-                console.log("Server is waking up...");
-            }
+            } catch(e) { console.log("Server still booting..."); }
         }
         setInterval(checkConn, 5000);
         checkConn();
@@ -82,7 +79,7 @@
                 renderResult(data);
                 saveScan(input, data);
             } catch (err) {
-                document.getElementById('loader').innerHTML = "<span style='color:#ff4444'>ERROR: Server is still waking up. Please wait 30s and try again.</span>";
+                document.getElementById('loader').innerHTML = "<span style='color:#ff4444'>ERROR: Server is waking up. Try again in 30 seconds.</span>";
             }
         }
 
